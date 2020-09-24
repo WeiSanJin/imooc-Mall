@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script src="../node_modules/axios/dist/axios.js"></script>
+</head>
+<body>
+<div id="app" class="container">
+  <h1>axios插件讲解</h1>
+  <a href="javascript:;" class="btn btn-primary" v-on:click="get">Get请求</a>
+  <a href="javascript:;" class="btn btn-primary" @click="post">Post请求</a>
+  <a href="javascript:;" class="btn btn-primary" @click="http">Http</a>
+  <div>
+    <span>{{msg}}</span>
+  </div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      msg: 'msg'
+    },
+    mounted() {
+      axios.interceptors.request.use(config=>{
+        console.log("request init")
+        return config
+      })
+      axios.interceptors.response.use(response=>{
+        console.log("response init")
+        return response
+      })
+    },
+    methods: {
+      get: function () {
+        axios.get("../package1.json",{
+          params: {
+            userId:'admin'
+          },
+          headers: {
+            token:"jack"
+          }
+        }).then(res=>{
+          this.msg = res.data
+        }).catch(error=>{
+          console.log("get init error："+error)
+        })
+      },
+      post: function () {
+        axios.post("../package.json",{
+          userId: 'Post Admin'
+        },{
+          headers: {
+            token: 'tom'
+          }
+        }).then(res=>{
+          this.msg = res.data;
+        }).catch(error=>{
+          console.log("post init error："+error)
+        })
+      },
+      http:function () {
+        axios({
+          url:"../package.json",
+          method:"post",
+          data:{
+            userId:"Http admin"
+          },
+          headers:{
+            token:"http-text"
+          }
+        }).then(res=>{
+          this.msg = res.data;
+        }).catch(error=>{
+          console.log("http init error："+error)
+        })
+      }
+    }
+  })
+</script>
+</body>
+</html>

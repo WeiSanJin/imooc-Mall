@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script src="../node_modules/vue-resource/dist/vue-resource.js"></script>
+</head>
+<body>
+<div id="app" class="container">
+  <h1>vue-resource插件讲解</h1>
+  <a href="javascript:;" class="btn btn-primary" v-on:click="get">Get请求</a>
+  <a href="javascript:;" class="btn btn-primary" v-on:click="post">Post请求</a>
+  <a href="javascript:;" class="btn btn-primary" @click="JsonP">JsonP请求</a>
+  <a href="javascript:;" class="btn btn-primary" @click="http">Http</a>
+  <div>
+    <span>{{msg}}</span>
+  </div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      msg: '123'
+    },
+    mounted() {
+      Vue.http.interceptors.push(function (request,next) {//全局拦截器
+        console.log("请求之前")
+        next(function (response) {
+          console.log("得到响应")
+          return response
+        })
+      });
+    },
+    methods: {
+      get: function () {
+        this.$http.get("../package.json", {
+          params: {
+            userId: "101"
+          },
+          headers: {
+            token: "abcd"
+          }
+        }).then(res => {
+          this.msg = res.data;
+          console.log(this.msg)
+        }, error => {
+          this.msg = error
+        });
+      },
+      post: function () {
+        this.$http.post("../package.json", {
+          usesId: "1230"
+        }, {
+          headers: {
+            access_token: 'asdsadasd'
+          }
+        }).then(res => {
+          this.msg = res.data
+        })
+      },
+      JsonP:function(){
+        this.$http.jsonp("http://www.baidu.com/").then(res=>{
+          this.msg = res.data
+        })
+      },
+      http:function () {
+        this.$http({
+          url:"../package.json",
+          params:{
+            userId:'1230'
+          },
+          headers:{
+            token:'asdasdsad'
+          },
+          timeout:5,
+          before() {
+            console.log("before")
+          }
+        }).then(res=>{
+          this.msg = res.data
+        })
+      }
+    }
+  })
+</script>
+</body>
+</html>
